@@ -119,7 +119,7 @@ function renderTrendingKeywords() {
     
     selectedKeywords.forEach(keyword => {
         const tag = document.createElement('span');
-        tag.className = 'trending-tag px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm cursor-pointer hover:bg-blue-200';
+        tag.className = 'trending-tag text-[vh] px-3 py-1 border-bg-stone-300  text-black rounded-full text-sm cursor-pointer hover:bg-stone-200';
         tag.textContent = keyword;
         tag.addEventListener('click', () => {
             elements.searchInput.value = keyword;
@@ -464,7 +464,7 @@ function toggleFavoritePhoto(photoId) {
     if (elements.modalImage.dataset.id === photoId) {
         elements.modalFavorite.querySelector('i').classList.toggle('far');
         elements.modalFavorite.querySelector('i').classList.toggle('fas');
-        elements.modalFavorite.classList.toggle('text-yellow-400');
+        elements.modalFavorite.classList.toggle('text-black');
     }
     
     // Save to localStorage
@@ -479,7 +479,7 @@ function toggleFavoritePhoto(photoId) {
 // Show favorites
 function showFavorites() {
     state.showingFavorites = true;
-    elements.favoritesToggle.classList.add('bg-yellow-500');
+    elements.favoritesToggle.classList.add('bg-red-500');
     elements.favoritesToggle.classList.remove('bg-blue-500');
     elements.gallery.innerHTML = '';
     elements.loadMoreButton.classList.add('hidden');
@@ -501,8 +501,8 @@ function showFavorites() {
 // Show all photos (exit favorites mode)
 function showAllPhotos() {
     state.showingFavorites = false;
-    elements.favoritesToggle.classList.remove('bg-yellow-500');
-    elements.favoritesToggle.classList.add('bg-blue-500');
+    elements.favoritesToggle.classList.remove('bg-red-500');
+    elements.favoritesToggle.classList.add('bg-black');
     
     if (state.currentQuery) {
         searchPhotos(state.currentQuery, 1);

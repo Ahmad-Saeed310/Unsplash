@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,200..900;1,200..900&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Lora:ital,wght@0,400..700;1,400..700&family=Outfit:wght@100..900&family=Pixelify+Sans:wght@400..700&display=swap" rel="stylesheet">
     <title>Unsplash Gallery</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .favorite-btn.active {
-            color: gold;
+            color: rgb(255, 36, 91);
         }
         .image-card {
             transition: transform 0.3s ease;
@@ -32,29 +35,44 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <header class="bg-white shadow-md">
+<body class="bg-white min-h-screen font-['Outfit']">
+    <header class="bg-white ">
+        <nav class="flex items-center px-[5vh] pt-[3vh]"> <img src="./Black logo.png" class="h-[5vh] w-[7.7vh] ml-[5vh] mr-[5vh] " alt="">
+            <ul class="flex space-x-[6vh] font-outfit p-4 text-[2vh]">
+                <li><a href="#" class=" hover:text-stone-500">Explore</a></li>
+                <li><a href="#" class=" hover:text-stone-500">Find Jobs</a></li>
+                <li><a href="#" class=" hover:text-stone-500">Blog</a></li>
+                <li><a href="#" class=" hover:text-stone-500"></a></li>
+            </ul>
+            <div class="ml-auto font-outfit flex items-center space-x-4 text-[2vh]">
+                <a href="#" class=" hover:text-blue-500">Sign In</a>
+                <a href="#" class="bg-black text-white  px-6 py-4 rounded-full hover:bg-blue-600">Sign Up</a>
+        </nav>
+        <div id="text" class="flex items-center font-lora font-light text-center justify-center text-[10vh] font-['Crimson'] leading-none mt-[6vh]"><h3>Experience the vision of <br> elite artists.</h3></div>
+        <div id="text" class="flex items-center text-center font-lora justify-center text-[3vh] mt-[4vh] font-['Crimson']"><h3>Explore visionary work from top artists ready to bring <br> your next project to life.</h3></div>
+    
         <div class="container mx-auto px-4 py-6">
+
             <div class="flex flex-col md:flex-row md:items-center justify-center">
                
-                <div class="flex items-center justify-center">
+                <div class="flex items-center w-full justify-center">
                     <div class="relative w-full md:w-64 mr-4">
                         <input type="text" id="search-input" placeholder="Search photos..." 
-                            class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-stone-500">
                         <button id="search-button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
                             <i class="fas fa-search"></i>
                         </button>
                         <div id="search-suggestions" class="suggestions-container bg-white rounded-lg mt-1 hidden"></div>
                     </div>
-                    <button id="favorites-toggle" class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none">
+                    <button id="favorites-toggle" class="px-4 py-2 bg-black text-white rounded-full hover:bg-red-500 focus:outline-none">
                         <i class="fas fa-heart"></i> 
                     </button>
                 </div>
             </div>
             <div class="mt-4 flex flex-col md:flex-row md:items-center justify-center">
-                <div class="mb-2 text-sm text-gray-600">Trending:</div>
+                <div class="mb-2 text-[3vh]   text-gray-600">Trending:</div>
                 <div id="trending-keywords" class="flex flex-wrap gap-2">
-                    <div class="loading-tags flex space-x-2">
+                    <div class="loading-tags flex space-x-2 text-[3vh] ">
                         <div class="h-6 w-16 bg-gray-200 rounded-full animate-pulse"></div>
                         <div class="h-6 w-20 bg-gray-200 rounded-full animate-pulse"></div>
                         <div class="h-6 w-14 bg-gray-200 rounded-full animate-pulse"></div>
@@ -64,9 +82,9 @@
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto bg-white px-4 py-8">
         <div class="mb-6">
-            <h2 id="gallery-title" class="text-xl font-semibold text-gray-700 mb-2">Popular Photos</h2>
+            <h2 id="gallery-title" class="text-xl font-semibold text-black mb-2">Popular Photos</h2>
             <div id="gallery-description" class="text-sm text-gray-500">Browse popular photos from Unsplash</div>
         </div>
 
