@@ -31,6 +31,34 @@ const elements = {
     searchSuggestions: document.getElementById('search-suggestions')
 };
 
+// User tags - these can be randomly assigned to users
+const USER_TAGS = [
+    'Team Pro Studio',
+    'Official',
+    'Verified',
+    'Editor\'s Choice',
+    'Featured Creator',
+    'Top Contributor',
+    'Premium',
+    'Pro Photographer',
+    'Ambassador',
+    'Rising Talent'
+];
+
+// Generate a tag for a user based on their username and other properties
+function getUserTag(user) {
+    // Use a hash function based on username to consistently assign the same tag to the same user
+    const hash = user.username.split('').reduce((acc, char) => {
+        return ((acc << 5) - acc) + char.charCodeAt(0);
+    }, 0);
+    
+    // Use the hash to select a tag (ensures the same user always gets the same tag)
+    const tagIndex = Math.abs(hash) % USER_TAGS.length;
+    
+    // Return the selected tag
+    return USER_TAGS[tagIndex];
+}
+
 // Trending keywords (these can be updated based on your audience/preference)
 const TRENDING_KEYWORDS = [
     'nature', 'travel', 'landscape', 'food', 'architecture', 
@@ -369,28 +397,30 @@ function renderPhotos(photos, append = false) {
     
     photos.forEach(photo => {
         const isInFavorites = state.favorites.some(fav => fav.id === photo.id);
+        const userTag = getUserTag(photo.user);
         const article = document.createElement('article');
-        article.className = 'image-card bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg';
+        article.className = 'image-card bg-white  overflow-hidden shadow-md ';
         article.innerHTML = `
             <div class="relative">
                 <img src="${photo.urls.small}" alt="${photo.alt_description || 'Unsplash photo'}" 
                     class="w-full h-64 object-cover cursor-pointer"
                     data-id="${photo.id}" data-full="${photo.urls.full}">
-                <button class="favorite-btn absolute top-3 right-3 bg-white bg-opacity-70 rounded-full p-2 text-xl shadow-sm hover:bg-opacity-100 transition-all ${isInFavorites ? 'active' : ''}" 
-                    data-id="${photo.id}">
-                    <i class="fas fa-star"></i>
-                </button>
             </div>
-            <div class="p-4">
-                <div class="flex items-center">
-                    <img src="${photo.user.profile_image.small}" alt="${photo.user.name}" class="w-8 h-8 rounded-full mr-2">
-                    <div>
-                        <h3 class="font-medium text-sm">${photo.user.name}</h3>
-                        <a href="${photo.user.links.html}?utm_source=unsplash_gallery&utm_medium=referral" target="_blank" class="text-xs text-blue-500">@${photo.user.username}</a>
+            <div class="p-4 bg-red-3001">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <img src="${photo.user.profile_image.small}" alt="${photo.user.name}" class="w-8 h-8 rounded-full mr-2">
+                        <div>
+                            <h3 class="font-medium text-sm">${photo.user.name}</h3>
+                            <span class="text-xs text-gray-500">${userTag}</span>
+                        </div>
+                        
                     </div>
-                </div>
-                <div class="mt-3 text-sm text-gray-500">
-                    <span>${new Date(photo.created_at).toLocaleDateString()}</span>
+                    <button class="favorite-btn bg-white bg-opacity-70 rounded-full p-2 text-xl shadow-sm hover:bg-opacity-100 transition-all ${isInFavorites ? 'active' : ''}" 
+                        data-id="${photo.id}">
+                       <i class="fas fa-heart"></i>
+
+                    </button>
                 </div>
             </div>
         `;
@@ -494,6 +524,8 @@ function toggleFavorites() {
 
 // Open photo modal
 function openPhotoModal(photo) {
+    const userTag = getUserTag(photo.user);
+    
     elements.modalImage.src = photo.urls.regular;
     elements.modalImage.dataset.id = photo.id;
     elements.modalUsername.textContent = photo.user.name;
@@ -503,6 +535,17 @@ function openPhotoModal(photo) {
     elements.modalDate.textContent = new Date(photo.created_at).toLocaleDateString();
     elements.modalDescription.textContent = photo.description || photo.alt_description || '';
     elements.modalDownload.href = `${photo.links.download}&force=true`;
+    
+    // Add user tag to modal
+    if (document.getElementById('modal-user-tag')) {
+        document.getElementById('modal-user-tag').textContent = userTag;
+    } else {
+        const tagSpan = document.createElement('span');
+        tagSpan.id = 'modal-user-tag';
+        tagSpan.className = 'text-xs text-gray-500 block mt-1';
+        tagSpan.textContent = userTag;
+        elements.modalUsername.parentNode.appendChild(tagSpan);
+    }
     
     // Check if photo is in favorites
     const isInFavorites = state.favorites.some(fav => fav.id === photo.id);
