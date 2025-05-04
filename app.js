@@ -28,19 +28,21 @@ const elements = {
     modalDate: document.getElementById('modal-date'),
     modalDescription: document.getElementById('modal-description'),
     trendingKeywords: document.getElementById('trending-keywords'),
-    searchSuggestions: document.getElementById('search-suggestions'),
-    voiceSearchButton: document.getElementById('voice-search-button')
+    searchSuggestions: document.getElementById('search-suggestions')
 };
 
 // User tags - these can be randomly assigned to users
 const USER_TAGS = [
-    'Studio',
+    'Team Pro Studio',
     'Official',
     'Verified',
+    'Editor\'s Choice',
+    'Featured Creator',
+    'Top Contributor',
     'Premium',
-    'ProPhotographer',
+    'Pro Photographer',
     'Ambassador',
-    'RisingTalent'
+    'Rising Talent'
 ];
 
 // Generate a tag for a user based on their username and other properties
@@ -75,9 +77,7 @@ let state = {
     hasMore: false,
     showingFavorites: false,
     favorites: JSON.parse(localStorage.getItem('unsplash-favorites') || '[]'),
-    debounceTimeout: null,
-    isListening: false,
-    recognition: null
+    debounceTimeout: null
 };
 
 // Event listeners
@@ -102,134 +102,12 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleFavoritePhoto(id);
     });
 
-    // Set up voice search if supported
-    setupVoiceSearch();
-
     // Load trending keywords
     renderTrendingKeywords();
 
     // Load initial photos
     fetchPopularPhotos();
 });
-
-// Set up voice search functionality
-function setupVoiceSearch() {
-    // Check if browser supports speech recognition
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-        // Initialize speech recognition
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        state.recognition = new SpeechRecognition();
-        state.recognition.continuous = false;
-        state.recognition.interimResults = false;
-        state.recognition.lang = 'en-US'; // Set language to English
-        
-        // Add event listener for voice search button
-        elements.voiceSearchButton.addEventListener('click', toggleVoiceInput);
-        
-        // Handle recognition results
-        state.recognition.onresult = function(event) {
-            const transcript = event.results[0][0].transcript;
-            elements.searchInput.value = transcript;
-            handleSearch();
-            stopVoiceInput();
-        };
-        
-        // Handle recognition end
-        state.recognition.onend = function() {
-            stopVoiceInput();
-        };
-        
-        // Handle recognition errors
-        state.recognition.onerror = function(event) {
-            console.error('Speech recognition error:', event.error);
-            showError('Voice input error. Please try again.');
-            stopVoiceInput();
-        };
-    } else {
-        // Hide voice search button if not supported
-        elements.voiceSearchButton.style.display = 'none';
-        console.log('Speech recognition not supported in this browser');
-    }
-}
-
-// Toggle voice input on/off
-function toggleVoiceInput() {
-    if (state.isListening) {
-        stopVoiceInput();
-    } else {
-        startVoiceInput();
-    }
-}
-
-// Start voice input
-function startVoiceInput() {
-    if (state.recognition) {
-        try {
-            state.recognition.start();
-            state.isListening = true;
-            elements.voiceSearchButton.classList.add('text-red-500');
-            elements.voiceSearchButton.classList.remove('text-gray-500');
-            elements.searchInput.placeholder = 'Listening...';
-            
-            // Create and show a listening indicator
-            showListeningIndicator();
-        } catch (error) {
-            console.error('Could not start speech recognition:', error);
-            showError('Could not start voice input');
-        }
-    }
-}
-
-// Stop voice input
-function stopVoiceInput() {
-    if (state.recognition) {
-        try {
-            state.recognition.stop();
-        } catch (e) {
-            // Ignore errors on stop
-        }
-        state.isListening = false;
-        elements.voiceSearchButton.classList.remove('text-red-500');
-        elements.voiceSearchButton.classList.add('text-gray-500');
-        elements.searchInput.placeholder = 'Search photos...';
-        
-        // Remove listening indicator
-        hideListeningIndicator();
-    }
-}
-
-// Show a visual indicator that the app is listening
-function showListeningIndicator() {
-    // Check if indicator already exists
-    let indicator = document.getElementById('voice-indicator');
-    if (!indicator) {
-        indicator = document.createElement('div');
-        indicator.id = 'voice-indicator';
-        indicator.className = 'absolute left-5 top-0 bottom-0 flex items-center animate-pulse';
-        
-        // Create wave animation for the indicator
-        const waves = document.createElement('div');
-        waves.className = 'flex items-center space-x-1';
-        waves.innerHTML = `
-            <div class="w-1 h-2 bg-red-500 rounded"></div>
-            <div class="w-1 h-3 bg-red-500 rounded"></div>
-            <div class="w-1 h-4 bg-red-500 rounded"></div>
-            <div class="w-1 h-3 bg-red-500 rounded"></div>
-            <div class="w-1 h-2 bg-red-500 rounded"></div>
-        `;
-        
-        indicator.appendChild(waves);
-        elements.searchInput.parentNode.appendChild(indicator);
-    }
-}
-
-// Hide the listening indicator
-function hideListeningIndicator() {
-    const indicator = document.getElementById('voice-indicator');
-    if (indicator) {
-        indicator.remove();
-    }
-}
 
 // Render trending keywords
 function renderTrendingKeywords() {
@@ -326,12 +204,24 @@ async function fetchSearchSuggestions(query) {
 function showSearchSuggestions(query = '') {
     elements.searchSuggestions.innerHTML = '';
     
-    // We're no longer showing recent searches, only API-based suggestions
-    // These will be added by fetchSearchSuggestions()
+    // If there's a query, filter history by it
+    let filteredHistory = searchHistory;
+    if (typeof query === 'string' && query.length > 0) {
+        filteredHistory = searchHistory.filter(term => 
+            term.toLowerCase().includes(query.toLowerCase())
+        );
+    }
     
-    // If this is called directly without a query, hide suggestions
-    if (!query) {
+    // Show history suggestions
+    if (filteredHistory.length > 0) {
+        appendSearchSuggestions(filteredHistory.slice(-5).reverse(), 'Recent Searches');
+    }
+    
+    // If no suggestions, hide the container
+    if (elements.searchSuggestions.children.length === 0) {
         elements.searchSuggestions.classList.add('hidden');
+    } else {
+        elements.searchSuggestions.classList.remove('hidden');
     }
 }
 
@@ -525,16 +415,16 @@ function renderPhotos(photos, append = false) {
                 <div class="image-info pointer-events-none">
                     <h3 class="text-white text-sm font-medium truncate mb-2">${imageName}</h3>
                     <div class="flex items-center justify-between">
-                        <div class="profile-section pointer-events-none">
-                            <img src="${photo.user.profile_image.small}" alt="${photo.user.name}" class="profile-image">
-                            <div class="profile-info">
-                                <h4 class="profile-name">${photo.user.name}</h4>
-                                <span class="profile-tag">${userTag}</span>
+                        <div class="profile-section pointer-events-auto rounded-full py-1 px-3 bg-black bg-opacity-50 backdrop-blur">
+                            <div class="flex items-center gap-2">
+                                <span class="profile-name text-white text-xs">${photo.user.name}</span>
+                                <span class="profile-divider text-gray-400">•</span>
+                                <span class="profile-tag text-gray-300 text-xs">${userTag}</span>
                             </div>
                         </div>
-                        <button class="favorite-btn bg-black bg-opacity-30 rounded-full p-2 text-lg shadow-sm hover:bg-opacity-50 transition-all pointer-events-auto ${isInFavorites ? 'active' : ''}" 
+                        <button class="favorite-btn pointer-events-auto ${isInFavorites ? 'active' : ''}" 
                             data-id="${photo.id}">
-                            <i class="fas fa-heart ${isInFavorites ? 'text-pink-500' : 'text-white'}"></i>
+                            <i class="fas fa-heart"></i>
                         </button>
                     </div>
                 </div>
@@ -543,12 +433,10 @@ function renderPhotos(photos, append = false) {
         
         elements.gallery.appendChild(article);
         
-        // Add click event to open modal - attach directly to the entire card
-        article.addEventListener('click', (e) => {
-            // Only open modal if not clicking favorite button
-            if (!e.target.closest('.favorite-btn')) {
-                openPhotoModal(photo);
-            }
+        // Add click event to open modal
+        const img = article.querySelector('img');
+        img.addEventListener('click', () => {
+            openPhotoModal(photo);
         });
         
         // Add click event to favorite button
@@ -574,31 +462,15 @@ function toggleFavoritePhoto(photoId) {
         }
     }
     
-    // Log for debugging
-    console.log('Toggle favorite:', photoId, 'Is now favorite:', !isInFavorites);
-    
-    // Update UI - fix heart icon color and active state
+    // Update UI
     const favBtns = document.querySelectorAll(`.favorite-btn[data-id="${photoId}"]`);
-    favBtns.forEach(btn => {
-        btn.classList.toggle('active');
-        const heartIcon = btn.querySelector('i.fas.fa-heart');
-        if (!isInFavorites) { // Adding to favorites
-            heartIcon.style.color = 'rgb(255, 36, 91)';
-        } else { // Removing from favorites
-            heartIcon.style.color = 'white';
-        }
-    });
+    favBtns.forEach(btn => btn.classList.toggle('active'));
     
     // Update modal if open
-    if (elements.modalImage && elements.modalImage.dataset.id === photoId) {
-        const modalIcon = elements.modalFavorite.querySelector('i');
-        if (!isInFavorites) {
-            modalIcon.className = 'fas fa-heart';
-            modalIcon.style.color = 'rgb(255, 36, 91)';
-        } else {
-            modalIcon.className = 'far fa-heart';
-            modalIcon.style.color = '';
-        }
+    if (elements.modalImage.dataset.id === photoId) {
+        elements.modalFavorite.querySelector('i').classList.toggle('far');
+        elements.modalFavorite.querySelector('i').classList.toggle('fas');
+        elements.modalFavorite.classList.toggle('text-yellow-400');
     }
     
     // Save to localStorage

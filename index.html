@@ -14,21 +14,35 @@
     <title>Unsplash Gallery</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .favorite-btn.active {
-            color: rgb(255, 36, 91) !important; /* Using !important to ensure this rule takes precedence */
+        .favorite-btn.active i {
+            color: rgb(255, 36, 91) !important;
         }
-        .image-card {
-            transition: all 0.3s ease;
-            break-inside: avoid;
-            margin-bottom: 16px;
+        
+        .favorite-btn {
+            z-index: 30;
             position: relative;
-            border-radius: 16px;
-            overflow: hidden;
             cursor: pointer;
+            width: 32px; /* Increased size for better interaction */
+            height: 32px; /* Increased size for better interaction */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
-        .image-card:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+            background-color: rgba(0, 0, 0, 0.8);
         }
+
+        .favorite-btn i {
+            font-size: 16px; /* Increased size */
+            color: white; /* Default color */
+        }
+        
         .trending-tag {
             transition: all 0.2s ease;
         }
@@ -36,9 +50,10 @@
             transform: scale(1.05);
         }
         
+        /* Pinterest style grid using CSS columns */
         .pinterest-grid {
             column-count: 3;
-            column-gap: 16px;
+            column-gap: 24px; /* Increased column gap */
             width: 100%;
         }
 
@@ -55,14 +70,25 @@
             }
         }
 
-        /* Remove fixed height on images to maintain aspect ratio */
+        /* Add margin to image cards for vertical spacing */
+        .image-card {
+            margin-bottom: 24px;
+            break-inside: avoid;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+      
+
+        /* Images retain natural aspect ratio */
         .image-card img {
             width: 100%;
             height: auto;
             display: block;
         }
 
-        /* Style for the image info overlay */
+        /* Image info overlay */
         .image-info {
             position: absolute;
             bottom: 0;
@@ -87,95 +113,24 @@
             pointer-events: auto;
         }
 
-        /* Sleek profile section styling */
+        /* Profile section styling */
         .profile-section {
             display: flex;
             align-items: center;
             background-color: rgba(0, 0, 0, 0.6);
-            border-radius: 50px;
-            padding: 4px 12px 4px 4px;
+            border-radius: 30px;
+            padding: 3px 8px 3px 3px;
             backdrop-filter: blur(4px);
             z-index: 20;
         }
 
-        /* Make the favorite button more visible and clickable */
-        .favorite-btn {
-            z-index: 30;
-            position: relative;
-            cursor: pointer;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(0, 0, 0, 0.6);
-            border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
-
-        .favorite-btn:hover {
-            transform: scale(1.1);
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        .favorite-btn i {
-            font-size: 16px;
-        }
-
-        .profile-image {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-        }
-
-        .profile-info {
-            margin-left: 8px;
-            line-height: 1.2;
-            overflow: hidden;
-        }
-
-        .profile-name {
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 150px;
-        }
-
-        .profile-tag {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.7rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Modal profile styling */
-        .modal-profile {
-            display: flex;
-            align-items: center;
-        }
-
-        .modal-profile-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #f3f4f6;
-        }
-
-        .modal-profile-info {
-            margin-left: 12px;
-        }
-
-        /* Make sure the favorite button displays properly in the modal */
-        #modal-favorite i.fas.fa-heart {
-            color: rgb(255, 36, 91);
+        .suggestions-container {
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
     </style>
 </head>
@@ -202,18 +157,13 @@
                 <div class="flex items-center w-full justify-center">
                     <div class="relative w-full md:w-64 mr-4">
                         <input type="text" id="search-input" placeholder="Search photos..." 
-                            class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-stone-500">
-                        <div class="absolute right-2 top-2 flex items-center space-x-2">
-                            <button id="voice-search-button" class="text-gray-500 hover:text-gray-700 mr-1" title="Search with your voice">
-                                <i class="fas fa-microphone"></i>
-                            </button>
-                            <button id="search-button" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
+                            class="w-full px-4 py-2 border rounded-full ">
+                        <button id="search-button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-search"></i>
+                        </button>
                         <div id="search-suggestions" class="suggestions-container bg-white rounded-lg mt-1 hidden"></div>
                     </div>
-                    <button id="favorites-toggle" class="px-4 py-2 bg-black text-white rounded-full hover:bg-red-600 focus:outline-none">
+                    <button id="favorites-toggle" class="px-4 py-2 bg-black text-white rounded-full hover:bg-red-500 focus:outline-none">
                         <i class="fas fa-heart"></i> 
                     </button>
                 </div>
@@ -249,7 +199,7 @@
         </div>
 
         <div class="mt-8 flex justify-center">
-            <button id="load-more" class="px-6 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-700 focus:outline-none hidden">
+            <button id="load-more" class="px-6 py-3 bg-gray-800 text-white rounded-full hover:bg-gray-700 focus:outline-none hidden">
                 Load More
             </button>
         </div>
