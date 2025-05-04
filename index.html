@@ -15,13 +15,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .favorite-btn.active {
-            color: rgb(255, 36, 91);
+            color: rgb(255, 36, 91) !important; /* Using !important to ensure this rule takes precedence */
         }
         .image-card {
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            break-inside: avoid;
+            margin-bottom: 16px;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
         }
         .image-card:hover {
-            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
         .trending-tag {
             transition: all 0.2s ease;
@@ -29,13 +34,47 @@
         .trending-tag:hover {
             transform: scale(1.05);
         }
-        .suggestions-container {
-            position: absolute;
+        
+        .pinterest-grid {
+            column-count: 3;
+            column-gap: 16px;
             width: 100%;
-            z-index: 10;
-            max-height: 200px;
-            overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .pinterest-grid {
+                column-count: 2;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .pinterest-grid {
+                column-count: 1;
+            }
+        }
+
+        /* Remove fixed height on images to maintain aspect ratio */
+        .image-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Style for the image info overlay */
+        .image-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 20px 16px 16px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .image-card:hover .image-info {
+            opacity: 1;
         }
     </style>
 </head>
@@ -63,12 +102,17 @@
                     <div class="relative w-full md:w-64 mr-4">
                         <input type="text" id="search-input" placeholder="Search photos..." 
                             class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-stone-500">
-                        <button id="search-button" class="absolute right-2 top-2 text-gray-500 hover:text-gray-700">
-                            <i class="fas fa-search"></i>
-                        </button>
+                        <div class="absolute right-2 top-2 flex items-center space-x-2">
+                            <button id="voice-search-button" class="text-gray-500 hover:text-gray-700 mr-1" title="Search with your voice">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button id="search-button" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
                         <div id="search-suggestions" class="suggestions-container bg-white rounded-lg mt-1 hidden"></div>
                     </div>
-                    <button id="favorites-toggle" class="px-4 py-2 bg-black text-white rounded-full hover:bg-red-500 focus:outline-none">
+                    <button id="favorites-toggle" class="px-4 py-2 bg-black text-white rounded-full hover:bg-red-600 focus:outline-none">
                         <i class="fas fa-heart"></i> 
                     </button>
                 </div>
@@ -96,7 +140,7 @@
             <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
         </div>
 
-        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6"></div>
+        <div id="gallery" class="pinterest-grid"></div>
         
         <div id="no-results" class="text-center py-10 hidden">
             <i class="fas fa-search text-4xl text-gray-400 mb-3"></i>

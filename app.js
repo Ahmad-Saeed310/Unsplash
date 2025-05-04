@@ -28,21 +28,19 @@ const elements = {
     modalDate: document.getElementById('modal-date'),
     modalDescription: document.getElementById('modal-description'),
     trendingKeywords: document.getElementById('trending-keywords'),
-    searchSuggestions: document.getElementById('search-suggestions')
+    searchSuggestions: document.getElementById('search-suggestions'),
+    voiceSearchButton: document.getElementById('voice-search-button')
 };
 
 // User tags - these can be randomly assigned to users
 const USER_TAGS = [
-    'Team Pro Studio',
+    'Studio',
     'Official',
     'Verified',
-    'Editor\'s Choice',
-    'Featured Creator',
-    'Top Contributor',
     'Premium',
-    'Pro Photographer',
+    'ProPhotographer',
     'Ambassador',
-    'Rising Talent'
+    'RisingTalent'
 ];
 
 // Generate a tag for a user based on their username and other properties
@@ -77,7 +75,9 @@ let state = {
     hasMore: false,
     showingFavorites: false,
     favorites: JSON.parse(localStorage.getItem('unsplash-favorites') || '[]'),
-    debounceTimeout: null
+    debounceTimeout: null,
+    isListening: false,
+    recognition: null
 };
 
 // Event listeners
@@ -102,12 +102,134 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleFavoritePhoto(id);
     });
 
+    // Set up voice search if supported
+    setupVoiceSearch();
+
     // Load trending keywords
     renderTrendingKeywords();
 
     // Load initial photos
     fetchPopularPhotos();
 });
+
+// Set up voice search functionality
+function setupVoiceSearch() {
+    // Check if browser supports speech recognition
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        // Initialize speech recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        state.recognition = new SpeechRecognition();
+        state.recognition.continuous = false;
+        state.recognition.interimResults = false;
+        state.recognition.lang = 'en-US'; // Set language to English
+        
+        // Add event listener for voice search button
+        elements.voiceSearchButton.addEventListener('click', toggleVoiceInput);
+        
+        // Handle recognition results
+        state.recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            elements.searchInput.value = transcript;
+            handleSearch();
+            stopVoiceInput();
+        };
+        
+        // Handle recognition end
+        state.recognition.onend = function() {
+            stopVoiceInput();
+        };
+        
+        // Handle recognition errors
+        state.recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            showError('Voice input error. Please try again.');
+            stopVoiceInput();
+        };
+    } else {
+        // Hide voice search button if not supported
+        elements.voiceSearchButton.style.display = 'none';
+        console.log('Speech recognition not supported in this browser');
+    }
+}
+
+// Toggle voice input on/off
+function toggleVoiceInput() {
+    if (state.isListening) {
+        stopVoiceInput();
+    } else {
+        startVoiceInput();
+    }
+}
+
+// Start voice input
+function startVoiceInput() {
+    if (state.recognition) {
+        try {
+            state.recognition.start();
+            state.isListening = true;
+            elements.voiceSearchButton.classList.add('text-red-500');
+            elements.voiceSearchButton.classList.remove('text-gray-500');
+            elements.searchInput.placeholder = 'Listening...';
+            
+            // Create and show a listening indicator
+            showListeningIndicator();
+        } catch (error) {
+            console.error('Could not start speech recognition:', error);
+            showError('Could not start voice input');
+        }
+    }
+}
+
+// Stop voice input
+function stopVoiceInput() {
+    if (state.recognition) {
+        try {
+            state.recognition.stop();
+        } catch (e) {
+            // Ignore errors on stop
+        }
+        state.isListening = false;
+        elements.voiceSearchButton.classList.remove('text-red-500');
+        elements.voiceSearchButton.classList.add('text-gray-500');
+        elements.searchInput.placeholder = 'Search photos...';
+        
+        // Remove listening indicator
+        hideListeningIndicator();
+    }
+}
+
+// Show a visual indicator that the app is listening
+function showListeningIndicator() {
+    // Check if indicator already exists
+    let indicator = document.getElementById('voice-indicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'voice-indicator';
+        indicator.className = 'absolute left-5 top-0 bottom-0 flex items-center animate-pulse';
+        
+        // Create wave animation for the indicator
+        const waves = document.createElement('div');
+        waves.className = 'flex items-center space-x-1';
+        waves.innerHTML = `
+            <div class="w-1 h-2 bg-red-500 rounded"></div>
+            <div class="w-1 h-3 bg-red-500 rounded"></div>
+            <div class="w-1 h-4 bg-red-500 rounded"></div>
+            <div class="w-1 h-3 bg-red-500 rounded"></div>
+            <div class="w-1 h-2 bg-red-500 rounded"></div>
+        `;
+        
+        indicator.appendChild(waves);
+        elements.searchInput.parentNode.appendChild(indicator);
+    }
+}
+
+// Hide the listening indicator
+function hideListeningIndicator() {
+    const indicator = document.getElementById('voice-indicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
 
 // Render trending keywords
 function renderTrendingKeywords() {
@@ -204,24 +326,12 @@ async function fetchSearchSuggestions(query) {
 function showSearchSuggestions(query = '') {
     elements.searchSuggestions.innerHTML = '';
     
-    // If there's a query, filter history by it
-    let filteredHistory = searchHistory;
-    if (typeof query === 'string' && query.length > 0) {
-        filteredHistory = searchHistory.filter(term => 
-            term.toLowerCase().includes(query.toLowerCase())
-        );
-    }
+    // We're no longer showing recent searches, only API-based suggestions
+    // These will be added by fetchSearchSuggestions()
     
-    // Show history suggestions
-    if (filteredHistory.length > 0) {
-        appendSearchSuggestions(filteredHistory.slice(-5).reverse(), 'Recent Searches');
-    }
-    
-    // If no suggestions, hide the container
-    if (elements.searchSuggestions.children.length === 0) {
+    // If this is called directly without a query, hide suggestions
+    if (!query) {
         elements.searchSuggestions.classList.add('hidden');
-    } else {
-        elements.searchSuggestions.classList.remove('hidden');
     }
 }
 
@@ -398,30 +508,44 @@ function renderPhotos(photos, append = false) {
     photos.forEach(photo => {
         const isInFavorites = state.favorites.some(fav => fav.id === photo.id);
         const userTag = getUserTag(photo.user);
+        // Get the image name (use description, alt description, or a fallback)
+        const imageName = photo.description || photo.alt_description || 'Untitled Image';
+        
         const article = document.createElement('article');
-        article.className = 'image-card bg-white  overflow-hidden shadow-md ';
+        article.className = 'image-card';
+        
+        // Calculate aspect ratio for proper image sizing (Pinterest-style)
+        const aspectRatio = photo.height / photo.width;
+        const randomHeight = Math.floor(Math.random() * 100) + 200; // Add some randomness to heights for Pinterest feel
+        
         article.innerHTML = `
-            <div class="relative">
-                <img src="${photo.urls.small}" alt="${photo.alt_description || 'Unsplash photo'}" 
-                    class="w-full h-64 object-cover cursor-pointer"
-                    data-id="${photo.id}" data-full="${photo.urls.full}">
-            </div>
-            <div class="p-4 bg-red-3001">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <img src="${photo.user.profile_image.small}" alt="${photo.user.name}" class="w-8 h-8 rounded-full mr-2">
-                        <div>
-                            <h3 class="font-medium text-sm">${photo.user.name}</h3>
-                            <span class="text-xs text-gray-500">${userTag}</span>
-                        </div>
-                        
-                    </div>
-                    <button class="favorite-btn bg-white bg-opacity-70 rounded-full p-2 text-xl shadow-sm hover:bg-opacity-100 transition-all ${isInFavorites ? 'active' : ''}" 
-                        data-id="${photo.id}">
-                       <i class="fas fa-heart"></i>
-
-                    </button>
+            <div class="relative group">
+            <img src="${photo.urls.small}" 
+                alt="${photo.alt_description || 'Unsplash photo'}" 
+                class=" object-cover w-[2vh] h-[2vh] rounded-lg cursor-pointer"
+                data-id="${photo.id}" 
+                data-full="${photo.urls.full}">
+            
+            <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4 rounded-lg">
+                <div>
+                <h3 class="text-red-300 text-sm font-semibold  truncate">${imageName}</h3>
                 </div>
+                <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <img src="${photo.user.profile_image.small}" 
+                    alt="${photo.user.name}" 
+                    class="w-2 h-2 rounded-full mr-2">
+                    <div class="flex items-center gap-[.5vh] ">
+                    <h4 class="text-yellow-300 flex items-center  font-medium">${photo.user.name}</h4>
+                    <span class="text-xs bg-green-900 flex items-center justify-between px-[.5vh] py-[.3vh] rounded-full text-gray-300">${userTag}</span>
+                    </div>
+                </div>
+                <button class="favorite-btn bg-black bg-opacity-30 rounded-full p-2 text-lg shadow-sm hover:bg-opacity-50 transition-all ${isInFavorites ? 'active' : ''}" 
+                    data-id="${photo.id}">
+                    <i class="fas fa-heart ${isInFavorites ? 'text-pink-500' : 'text-white'}"></i>
+                </button>
+                </div>
+            </div>
             </div>
         `;
         
@@ -431,6 +555,11 @@ function renderPhotos(photos, append = false) {
         const img = article.querySelector('img');
         img.addEventListener('click', () => {
             openPhotoModal(photo);
+        });
+        
+        // Show info on hover for mobile and touch devices
+        article.addEventListener('touchstart', () => {
+            article.querySelector('.image-info').style.opacity = '1';
         });
         
         // Add click event to favorite button
