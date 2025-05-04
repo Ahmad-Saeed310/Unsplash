@@ -181,6 +181,49 @@
         </div>
     </header>
 
+    <!-- Simple tutorial popup for first-time users -->
+    <div id="tutorial-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg max-w-md w-full p-5 shadow-xl">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-semibold">Welcome!</h2>
+                <button id="close-tutorial" class="text-gray-500 hover:text-gray-700" aria-label="Close tutorial">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <p class="text-sm text-gray-600 mb-4">Explore stunning photos from talented artists around the world.</p>
+            
+            <div class="flex items-center justify-center mb-4">
+                <img src="./Black logo.png" class="h-8" alt="Unsplash Logo">
+            </div>
+            
+            <div class="flex justify-between text-center mb-4">
+                <div class="w-1/3">
+                    <i class="fas fa-search text-gray-700 text-xl mb-2"></i>
+                    <p class="text-xs">Search photos</p>
+                </div>
+                <div class="w-1/3">
+                    <i class="fas fa-heart text-gray-700 text-xl mb-2"></i>
+                    <p class="text-xs">Save favorites</p>
+                </div>
+                <div class="w-1/3">
+                    <i class="fas fa-download text-gray-700 text-xl mb-2"></i>
+                    <p class="text-xs">Download free</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 flex justify-between">
+                <label class="flex items-center text-xs text-gray-600">
+                    <input type="checkbox" id="dont-show-tutorial" class="mr-2">
+                    Don't show again
+                </label>
+                <button id="tutorial-start" class="px-4 py-2 bg-black text-white text-sm rounded-full hover:bg-gray-800">
+                    Get Started
+                </button>
+            </div>
+        </div>
+    </div>
+
     <main class="container mx-auto bg-white px-4 py-8">
         <div class="mb-6">
             <h2 id="gallery-title" class="text-xl font-semibold text-black mb-2">Popular Photos</h2>
