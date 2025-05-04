@@ -514,52 +514,41 @@ function renderPhotos(photos, append = false) {
         const article = document.createElement('article');
         article.className = 'image-card';
         
-        // Calculate aspect ratio for proper image sizing (Pinterest-style)
-        const aspectRatio = photo.height / photo.width;
-        const randomHeight = Math.floor(Math.random() * 100) + 200; // Add some randomness to heights for Pinterest feel
-        
         article.innerHTML = `
-            <div class="relative group">
-            <img src="${photo.urls.small}" 
-                alt="${photo.alt_description || 'Unsplash photo'}" 
-                class=" object-cover w-[2vh] h-[2vh] rounded-lg cursor-pointer"
-                data-id="${photo.id}" 
-                data-full="${photo.urls.full}">
-            
-            <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4 rounded-lg">
-                <div>
-                <h3 class="text-red-300 text-sm font-semibold  truncate">${imageName}</h3>
-                </div>
-                <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <img src="${photo.user.profile_image.small}" 
-                    alt="${photo.user.name}" 
-                    class="w-2 h-2 rounded-full mr-2">
-                    <div class="flex items-center gap-[.5vh] ">
-                    <h4 class="text-yellow-300 flex items-center  font-medium">${photo.user.name}</h4>
-                    <span class="text-xs bg-green-900 flex items-center justify-between px-[.5vh] py-[.3vh] rounded-full text-gray-300">${userTag}</span>
+            <div class="relative">
+                <img src="${photo.urls.small}" 
+                    alt="${photo.alt_description || 'Unsplash photo'}" 
+                    class="w-full cursor-pointer"
+                    data-id="${photo.id}" 
+                    data-full="${photo.urls.full}">
+                
+                <div class="image-info pointer-events-none">
+                    <h3 class="text-white text-sm font-medium truncate mb-2">${imageName}</h3>
+                    <div class="flex items-center justify-between">
+                        <div class="profile-section pointer-events-none">
+                            <img src="${photo.user.profile_image.small}" alt="${photo.user.name}" class="profile-image">
+                            <div class="profile-info">
+                                <h4 class="profile-name">${photo.user.name}</h4>
+                                <span class="profile-tag">${userTag}</span>
+                            </div>
+                        </div>
+                        <button class="favorite-btn bg-black bg-opacity-30 rounded-full p-2 text-lg shadow-sm hover:bg-opacity-50 transition-all pointer-events-auto ${isInFavorites ? 'active' : ''}" 
+                            data-id="${photo.id}">
+                            <i class="fas fa-heart ${isInFavorites ? 'text-pink-500' : 'text-white'}"></i>
+                        </button>
                     </div>
                 </div>
-                <button class="favorite-btn bg-black bg-opacity-30 rounded-full p-2 text-lg shadow-sm hover:bg-opacity-50 transition-all ${isInFavorites ? 'active' : ''}" 
-                    data-id="${photo.id}">
-                    <i class="fas fa-heart ${isInFavorites ? 'text-pink-500' : 'text-white'}"></i>
-                </button>
-                </div>
-            </div>
             </div>
         `;
         
         elements.gallery.appendChild(article);
         
-        // Add click event to open modal
-        const img = article.querySelector('img');
-        img.addEventListener('click', () => {
-            openPhotoModal(photo);
-        });
-        
-        // Show info on hover for mobile and touch devices
-        article.addEventListener('touchstart', () => {
-            article.querySelector('.image-info').style.opacity = '1';
+        // Add click event to open modal - attach directly to the entire card
+        article.addEventListener('click', (e) => {
+            // Only open modal if not clicking favorite button
+            if (!e.target.closest('.favorite-btn')) {
+                openPhotoModal(photo);
+            }
         });
         
         // Add click event to favorite button
@@ -585,15 +574,31 @@ function toggleFavoritePhoto(photoId) {
         }
     }
     
-    // Update UI
+    // Log for debugging
+    console.log('Toggle favorite:', photoId, 'Is now favorite:', !isInFavorites);
+    
+    // Update UI - fix heart icon color and active state
     const favBtns = document.querySelectorAll(`.favorite-btn[data-id="${photoId}"]`);
-    favBtns.forEach(btn => btn.classList.toggle('active'));
+    favBtns.forEach(btn => {
+        btn.classList.toggle('active');
+        const heartIcon = btn.querySelector('i.fas.fa-heart');
+        if (!isInFavorites) { // Adding to favorites
+            heartIcon.style.color = 'rgb(255, 36, 91)';
+        } else { // Removing from favorites
+            heartIcon.style.color = 'white';
+        }
+    });
     
     // Update modal if open
-    if (elements.modalImage.dataset.id === photoId) {
-        elements.modalFavorite.querySelector('i').classList.toggle('far');
-        elements.modalFavorite.querySelector('i').classList.toggle('fas');
-        elements.modalFavorite.classList.toggle('text-black');
+    if (elements.modalImage && elements.modalImage.dataset.id === photoId) {
+        const modalIcon = elements.modalFavorite.querySelector('i');
+        if (!isInFavorites) {
+            modalIcon.className = 'fas fa-heart';
+            modalIcon.style.color = 'rgb(255, 36, 91)';
+        } else {
+            modalIcon.className = 'far fa-heart';
+            modalIcon.style.color = '';
+        }
     }
     
     // Save to localStorage

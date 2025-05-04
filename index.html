@@ -24,6 +24,7 @@
             position: relative;
             border-radius: 16px;
             overflow: hidden;
+            cursor: pointer;
         }
         .image-card:hover {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -75,6 +76,106 @@
 
         .image-card:hover .image-info {
             opacity: 1;
+        }
+
+        /* Fix for pointer events */
+        .pointer-events-none {
+            pointer-events: none;
+        }
+
+        .pointer-events-auto {
+            pointer-events: auto;
+        }
+
+        /* Sleek profile section styling */
+        .profile-section {
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 50px;
+            padding: 4px 12px 4px 4px;
+            backdrop-filter: blur(4px);
+            z-index: 20;
+        }
+
+        /* Make the favorite button more visible and clickable */
+        .favorite-btn {
+            z-index: 30;
+            position: relative;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.1);
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .favorite-btn i {
+            font-size: 16px;
+        }
+
+        .profile-image {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .profile-info {
+            margin-left: 8px;
+            line-height: 1.2;
+            overflow: hidden;
+        }
+
+        .profile-name {
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
+        }
+
+        .profile-tag {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.7rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Modal profile styling */
+        .modal-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #f3f4f6;
+        }
+
+        .modal-profile-info {
+            margin-left: 12px;
+        }
+
+        /* Make sure the favorite button displays properly in the modal */
+        #modal-favorite i.fas.fa-heart {
+            color: rgb(255, 36, 91);
         }
     </style>
 </head>
