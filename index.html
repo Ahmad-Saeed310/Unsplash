@@ -328,6 +328,19 @@
             z-index: 60;
             transition: var(--transition-smooth);
             border-radius: 12px;
+            width: 300px;
+            max-width: 90vw;
+            position: fixed;
+        }
+        
+        /* Media query for smaller screens */
+        @media (max-width: 640px) {
+            .tutorial-step {
+                width: 280px;
+                max-width: 85vw;
+                left: 50% !important;
+                transform: translateX(-50%);
+            }
         }
         
         .tutorial-step .absolute {
@@ -344,13 +357,27 @@
             background-color: rgba(255, 255, 255, 0.9);
         }
         
-        .tutorial-next, .tutorial-finish {
+        .tutorial-next, .tutorial-finish, .tutorial-back, .tutorial-skip, .tutorial-close-step {
             transition: var(--transition-smooth);
+            cursor: pointer;
         }
         
         .tutorial-next:hover, .tutorial-finish:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-soft);
+        }
+        
+        .tutorial-close-step {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tutorial-close-step:hover {
+            background-color: rgba(0,0,0,0.05);
         }
 
         #photo-modal {

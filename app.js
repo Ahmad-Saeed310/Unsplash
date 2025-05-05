@@ -226,34 +226,90 @@ function positionTutorialCard(stepNumber) {
     const currentStep = document.getElementById(`tutorial-step-${stepNumber}`);
     if (!currentStep) return;
     
+    // Get window dimensions for responsive positioning
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    
     switch (stepNumber) {
         case 1:
             // Position near search bar
             const searchInput = elements.searchInput;
+            if (!searchInput) return;
+            
             const searchRect = searchInput.getBoundingClientRect();
             
-            currentStep.style.top = `${searchRect.bottom + 10}px`;
-            currentStep.style.left = `${searchRect.left}px`;
+            // Position below search bar for larger screens, centered for mobile
+            if (windowWidth > 640) {
+                currentStep.style.top = `${searchRect.bottom + 16}px`;
+                currentStep.style.left = `${Math.max(10, searchRect.left)}px`;
+            } else {
+                // Center on small screens
+                currentStep.style.top = `${searchRect.bottom + 16}px`;
+                currentStep.style.left = '50%';
+                currentStep.style.transform = 'translateX(-50%)';
+            }
             break;
             
         case 2:
             // Position near favorites button
             const favBtn = elements.favoritesToggle;
+            if (!favBtn) return;
+            
             const favRect = favBtn.getBoundingClientRect();
             
-            currentStep.style.top = `${favRect.bottom + 10}px`;
-            currentStep.style.left = `${favRect.left - currentStep.offsetWidth/2 + favRect.width/2}px`;
+            if (windowWidth > 640) {
+                currentStep.style.top = `${favRect.bottom + 16}px`;
+                // Keep the step from going off-screen on the right
+                const rightPosition = favRect.left - (currentStep.offsetWidth/2) + (favRect.width/2);
+                currentStep.style.left = `${Math.min(rightPosition, windowWidth - currentStep.offsetWidth - 16)}px`;
+            } else {
+                // Center on small screens
+                currentStep.style.top = `${favRect.bottom + 16}px`;
+                currentStep.style.left = '50%';
+                currentStep.style.transform = 'translateX(-50%)';
+            }
             break;
             
         case 3:
             // Position near gallery
             const gallery = elements.gallery;
+            if (!gallery) return;
+            
             const galleryRect = gallery.getBoundingClientRect();
             
-            currentStep.style.top = `${galleryRect.top + 50}px`;
-            currentStep.style.left = `${galleryRect.left + 50}px`;
+            // Make sure the step is visible in the viewport
+            let topPosition = Math.max(galleryRect.top + 50, 70); // Ensure it's not too high
+            topPosition = Math.min(topPosition, windowHeight - currentStep.offsetHeight - 20); // Ensure it's not too low
+            
+            if (windowWidth > 640) {
+                currentStep.style.top = `${topPosition}px`;
+                currentStep.style.left = `${Math.min(galleryRect.left + 50, windowWidth - currentStep.offsetWidth - 16)}px`;
+            } else {
+                // Center on small screens
+                currentStep.style.top = `${topPosition}px`;
+                currentStep.style.left = '50%';
+                currentStep.style.transform = 'translateX(-50%)';
+            }
             break;
     }
+    
+    // Ensure the tutorial step is fully visible in the viewport
+    setTimeout(() => {
+        const stepRect = currentStep.getBoundingClientRect();
+        
+        // If the step is outside the viewport, adjust its position
+        if (stepRect.bottom > windowHeight) {
+            currentStep.style.top = `${windowHeight - stepRect.height - 20}px`;
+        }
+        
+        if (stepRect.right > windowWidth) {
+            currentStep.style.left = `${windowWidth - stepRect.width - 16}px`;
+            // Reset transform if it was set for mobile
+            if (windowWidth <= 640) {
+                currentStep.style.transform = 'none';
+            }
+        }
+    }, 0);
 }
 
 // Move to the next tutorial step
