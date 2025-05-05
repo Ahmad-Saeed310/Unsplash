@@ -3,7 +3,7 @@ const UNSPLASH_API = {
     baseUrl: 'https://api.unsplash.com',
     // Replace this with your actual Unsplash API access key
     accessKey: 'm4Hw2hi9VD1ZJtrrf-lTxzxMKNkjgZh_pjKg4CDR8B0',
-    perPage: 24 // Changed from 12 to 24 images per page
+    perPage: 24 // Changed from 24 to 12 images per page
 };
 
 // DOM Elements
@@ -624,82 +624,71 @@ function renderPhotos(photos, append = false) {
         elements.gallery.innerHTML = '';
     }
 
-    // Let the browser finish the layout before adding more images
-    setTimeout(() => {
-        photos.forEach((photo, index) => {
-            const isInFavorites = state.favorites.some(fav => fav.id === photo.id);
-            const userTag = getUserTag(photo.user);
-            const imageName = photo.description || photo.alt_description || 'Untitled Image';
+    photos.forEach((photo, index) => {
+        const isInFavorites = state.favorites.some(fav => fav.id === photo.id);
+        const userTag = getUserTag(photo.user);
+        const imageName = photo.description || photo.alt_description || 'Untitled Image';
 
-            const article = document.createElement('article');
-            article.className = 'image-card';
-            article.setAttribute('tabindex', '0');
-            article.setAttribute('role', 'button');
-            article.setAttribute('aria-label', `Photo by ${photo.user.name}: ${imageName}`);
+        const article = document.createElement('article');
+        article.className = 'image-card';
+        article.setAttribute('tabindex', '0');
+        article.setAttribute('role', 'button');
+        article.setAttribute('aria-label', `Photo by ${photo.user.name}: ${imageName}`);
 
-            article.innerHTML = `
-                <div class="relative">
-                    <img src="${photo.urls.small}" 
-                        alt="${photo.alt_description || 'Photo by ' + photo.user.name}" 
-                        class="w-full cursor-pointer"
-                        data-id="${photo.id}" 
-                        data-full="${photo.urls.full}">
-                    
-                    <div class="image-info pointer-events-none">
-                        <h3 class="text-white text-sm font-medium truncate mb-2">${imageName}</h3>
-                        <div class="flex items-center justify-between">
-                            <div class="profile-section pointer-events-auto rounded-full py-1 px-3 bg-black bg-opacity-50 backdrop-blur">
-                                <div class="flex items-center gap-2">
-                                    <span class="profile-name text-white text-xs">${photo.user.name}</span>
-                                    <span class="profile-divider text-gray-400">•</span>
-                                    <span class="profile-tag text-gray-300 text-xs">${userTag}</span>
-                                </div>
+        article.innerHTML = `
+            <div class="relative">
+                <img src="${photo.urls.small}" 
+                    alt="${photo.alt_description || 'Photo by ' + photo.user.name}" 
+                    class="w-full cursor-pointer"
+                    data-id="${photo.id}" 
+                    data-full="${photo.urls.full}">
+                
+                <div class="image-info pointer-events-none">
+                    <h3 class="text-white text-sm font-medium truncate mb-2">${imageName}</h3>
+                    <div class="flex items-center justify-between">
+                        <div class="profile-section pointer-events-auto rounded-full py-1 px-3 bg-black bg-opacity-50 backdrop-blur">
+                            <div class="flex items-center gap-2">
+                                <span class="profile-name text-white text-xs">${photo.user.name}</span>
+                                <span class="profile-divider text-gray-400">•</span>
+                                <span class="profile-tag text-gray-300 text-xs">${userTag}</span>
                             </div>
-                            <button class="favorite-btn pointer-events-auto ${isInFavorites ? 'active' : ''}" 
-                                data-id="${photo.id}"
-                                aria-label="${isInFavorites ? 'Remove from favorites' : 'Add to favorites'}"
-                                aria-pressed="${isInFavorites}">
-                                <i class="fas fa-heart" aria-hidden="true"></i>
-                            </button>
                         </div>
+                        <button class="favorite-btn pointer-events-auto ${isInFavorites ? 'active' : ''}" 
+                            data-id="${photo.id}"
+                            aria-label="${isInFavorites ? 'Remove from favorites' : 'Add to favorites'}"
+                            aria-pressed="${isInFavorites}">
+                            <i class="fas fa-heart" aria-hidden="true"></i>
+                        </button>
                     </div>
                 </div>
-            `;
+            </div>
+        `;
 
-            elements.gallery.appendChild(article);
+        elements.gallery.appendChild(article);
 
-            // Handle image loading to ensure proper layout
-            const img = article.querySelector('img');
-            img.addEventListener('load', () => {
-                // Add a small delay to make sure images settle properly
-                setTimeout(() => {
-                    article.style.opacity = '1';
-                }, 50);
-            });
-            
-            img.addEventListener('click', () => {
-                openPhotoModal(photo);
-            });
-
-            article.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    openPhotoModal(photo);
-                } else if (e.key === 'f' || e.key === 'F') {
-                    toggleFavoritePhoto(photo.id);
-                }
-            });
-
-            article.addEventListener('focus', () => {
-                state.currentFocusIndex = index;
-            });
-
-            const favoriteBtn = article.querySelector('.favorite-btn');
-            favoriteBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleFavoritePhoto(photo.id);
-            });
+        const img = article.querySelector('img');
+        img.addEventListener('click', () => {
+            openPhotoModal(photo);
         });
-    }, 100); // Small timeout to ensure the DOM is ready
+
+        article.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                openPhotoModal(photo);
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFavoritePhoto(photo.id);
+            }
+        });
+
+        article.addEventListener('focus', () => {
+            state.currentFocusIndex = index;
+        });
+
+        const favoriteBtn = article.querySelector('.favorite-btn');
+        favoriteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleFavoritePhoto(photo.id);
+        });
+    });
 }
 
 // Toggle favorite photo
@@ -712,8 +701,7 @@ function toggleFavoritePhoto(photoId) {
     } else {
         photo = state.photos.find(p => p.id === photoId);
         if (photo) {
-            // Add new favorites to the beginning of the array so they appear at the top
-            state.favorites.unshift(photo);
+            state.favorites.push(photo);
         }
     }
 
@@ -725,8 +713,9 @@ function toggleFavoritePhoto(photoId) {
     });
 
     if (elements.modalImage.dataset.id === photoId) {
-        elements.modalFavorite.querySelector('i').className = isInFavorites ? 'far fa-heart' : 'fas fa-heart';
-        elements.modalFavorite.classList.toggle('text-red-500', !isInFavorites);
+        elements.modalFavorite.querySelector('i').classList.toggle('far');
+        elements.modalFavorite.querySelector('i').classList.toggle('fas');
+        elements.modalFavorite.classList.toggle('text-yellow-400');
     }
 
     localStorage.setItem('unsplash-favorites', JSON.stringify(state.favorites));
@@ -739,9 +728,8 @@ function toggleFavoritePhoto(photoId) {
 // Show favorites
 function showFavorites() {
     state.showingFavorites = true;
-    // Keep the favorites toggle button black instead of changing to red
-    elements.favoritesToggle.classList.add('bg-black');
-    elements.favoritesToggle.classList.remove('bg-blue-500');
+    // Keep background black but add active class to style the heart icon
+    elements.favoritesToggle.classList.add('active');
     elements.gallery.innerHTML = '';
     elements.loadMoreButton.classList.add('hidden');
     elements.galleryTitle.textContent = 'Your Favorites';
@@ -762,8 +750,8 @@ function showFavorites() {
 // Show all photos (exit favorites mode)
 function showAllPhotos() {
     state.showingFavorites = false;
-    elements.favoritesToggle.classList.remove('bg-red-500');
-    elements.favoritesToggle.classList.add('bg-black');
+    // Remove active class when not showing favorites
+    elements.favoritesToggle.classList.remove('active');
 
     if (state.currentQuery) {
         searchPhotos(state.currentQuery, 1);
@@ -801,20 +789,19 @@ function openPhotoModal(photo) {
     } else {
         const tagSpan = document.createElement('span');
         tagSpan.id = 'modal-user-tag';
-        tagSpan.className = 'text-xs text-gray-400 block mt-1';
+        tagSpan.className = 'text-xs text-gray-500 block mt-1';
         tagSpan.textContent = userTag;
         elements.modalUsername.parentNode.appendChild(tagSpan);
     }
 
     const isInFavorites = state.favorites.some(fav => fav.id === photo.id);
-    // Using heart icon instead of star to match gallery cards
     elements.modalFavorite.querySelector('i').className = isInFavorites ? 'fas fa-heart' : 'far fa-heart';
     elements.modalFavorite.classList.toggle('text-red-500', isInFavorites);
 
     elements.photoModal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     
-    // Add event listener to close when clicking outside the modal
+    // Add event listener to close when clicking outside the modal content
     setTimeout(() => {
         elements.photoModal.addEventListener('click', closeModalOnOutsideClick);
     }, 100);
@@ -832,6 +819,7 @@ function closeModalOnOutsideClick(e) {
 function closePhotoModal() {
     elements.photoModal.classList.add('hidden');
     document.body.style.overflow = '';
+    // Remove the outside click event listener to avoid memory leaks
     elements.photoModal.removeEventListener('click', closeModalOnOutsideClick);
 }
 

@@ -43,6 +43,20 @@
             color: white; /* Default color */
         }
         
+        /* Favorites toggle button styling */
+        #favorites-toggle {
+            background-color: black;
+            transition: transform 0.2s ease;
+        }
+        
+        #favorites-toggle:hover {
+            transform: scale(1.05);
+        }
+        
+        #favorites-toggle.active i {
+            color: rgb(239, 68, 68) !important; /* text-red-500 in Tailwind */
+        }
+        
         .trending-tag {
             transition: all 0.2s ease;
         }
