@@ -1,4 +1,3 @@
-
 const UNSPLASH_API = {
     baseUrl: 'https://api.unsplash.com',
    
@@ -132,6 +131,25 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.dontShowTutorial?.addEventListener('change', (e) => {
         if (e.target.checked) {
             localStorage.setItem('tutorial-shown', 'true');
+        }
+    });
+    
+    // Add event listeners for the individual tutorial step close buttons
+    document.querySelectorAll('.tutorial-close-step').forEach(btn => {
+        btn.addEventListener('click', closeTutorial);
+    });
+    
+    // Make the tutorial backdrop clickable to close tutorial
+    elements.tutorialBackdrop?.addEventListener('click', closeTutorial);
+    
+    // Close tutorial when clicking outside any tutorial step
+    document.addEventListener('click', (e) => {
+        if (state.currentTutorialStep > 0 && 
+            !elements.tutorialOverlay.classList.contains('hidden') &&
+            !e.target.closest('.tutorial-step') && 
+            !e.target.closest('#tutorial-overlay') &&
+            !e.target.closest('.tutorial-close-step')) {
+            closeTutorial();
         }
     });
 

@@ -737,42 +737,64 @@
     
     <div id="tutorial-container" class="fixed inset-0 z-50 pointer-events-none">
        
+        <!-- Tutorial Step 1: Search Feature -->
         <div id="tutorial-step-1" class="tutorial-step absolute bg-white rounded-lg p-4 shadow-lg w-64 pointer-events-auto hidden">
-            <div class="flex items-center mb-2">
-                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">1</div>
-                <h3 class="font-semibold ml-2">Search Feature</h3>
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">1</div>
+                    <h3 class="font-semibold ml-2">Search Feature</h3>
+                </div>
+                <!-- Added Close Button -->
+                <button class="tutorial-close-step text-gray-400 hover:text-gray-700" aria-label="Close this tutorial step">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <p class="text-sm text-gray-600 mb-4">Discover amazing photos by searching for any keyword. Try "nature", "architecture" or anything that inspires you!</p>
-            <div class="flex justify-between">
+            <div class="flex justify-between items-center">
                 <button class="tutorial-skip text-gray-500 text-sm hover:text-gray-700">Skip Tour</button>
                 <button class="tutorial-next bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">Next</button>
             </div>
+            <div class="text-xs text-gray-400 mt-2 text-center">Press ESC key to close tutorial</div>
         </div>
         
-        
+        <!-- Tutorial Step 2: Favorites -->
         <div id="tutorial-step-2" class="tutorial-step absolute bg-white rounded-lg p-4 shadow-lg w-64 pointer-events-auto hidden">
-            <div class="flex items-center mb-2">
-                <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white">2</div>
-                <h3 class="font-semibold ml-2">Favorites</h3>
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white">2</div>
+                    <h3 class="font-semibold ml-2">Favorites</h3>
+                </div>
+                <!-- Added Close Button -->
+                <button class="tutorial-close-step text-gray-400 hover:text-gray-700" aria-label="Close this tutorial step">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <p class="text-sm text-gray-600 mb-4">Click the heart button to view your favorite photos. Save images by clicking the heart icon on any photo.</p>
-            <div class="flex justify-between">
+            <div class="flex justify-between items-center">
                 <button class="tutorial-back text-gray-500 text-sm hover:text-gray-700">Back</button>
                 <button class="tutorial-next bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Next</button>
             </div>
+            <div class="text-xs text-gray-400 mt-2 text-center">Press ESC key to close tutorial</div>
         </div>
         
-        
+        <!-- Tutorial Step 3: Gallery & Downloads -->
         <div id="tutorial-step-3" class="tutorial-step absolute bg-white rounded-lg p-4 shadow-lg w-64 pointer-events-auto hidden">
-            <div class="flex items-center mb-2">
-                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">3</div>
-                <h3 class="font-semibold ml-2">Gallery & Downloads</h3>
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">3</div>
+                    <h3 class="font-semibold ml-2">Gallery & Downloads</h3>
+                </div>
+                <!-- Added Close Button -->
+                <button class="tutorial-close-step text-gray-400 hover:text-gray-700" aria-label="Close this tutorial step">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <p class="text-sm text-gray-600 mb-4">Click any photo to view details. Download high-quality images for free by clicking the download icon.</p>
-            <div class="flex justify-between">
+            <div class="flex justify-between items-center">
                 <button class="tutorial-back text-gray-500 text-sm hover:text-gray-700">Back</button>
                 <button class="tutorial-finish bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">Finish</button>
             </div>
+            <div class="text-xs text-gray-400 mt-2 text-center">Press ESC key to close tutorial</div>
         </div>
     </div>
     
