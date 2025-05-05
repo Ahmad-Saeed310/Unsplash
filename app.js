@@ -113,6 +113,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', handleKeyboardNavigation);
     elements.searchInput.addEventListener('keydown', handleSearchSuggestionNavigation);
 
+    // Fix tutorial close functionality
+    const closeTutorialBtn = document.getElementById('close-tutorial');
+    if (closeTutorialBtn) {
+        closeTutorialBtn.addEventListener('click', closeTutorial);
+    }
+    
+    const tutorialStartBtn = document.getElementById('tutorial-start');
+    if (tutorialStartBtn) {
+        tutorialStartBtn.addEventListener('click', () => {
+            elements.tutorialOverlay.classList.add('hidden');
+            startTutorial();
+        });
+    }
+    
     // Tutorial event listeners
     elements.tutorialSkip.forEach(btn => {
         btn.addEventListener('click', closeTutorial);
@@ -142,13 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make the tutorial backdrop clickable to close tutorial
     elements.tutorialBackdrop?.addEventListener('click', closeTutorial);
     
-    // Close tutorial when clicking outside any tutorial step
+    // Simplified event listener for closing tutorial when clicking outside
     document.addEventListener('click', (e) => {
-        if (state.currentTutorialStep > 0 && 
-            !elements.tutorialOverlay.classList.contains('hidden') &&
+        if (!elements.tutorialOverlay.classList.contains('hidden') &&
             !e.target.closest('.tutorial-step') && 
             !e.target.closest('#tutorial-overlay') &&
-            !e.target.closest('.tutorial-close-step')) {
+            !e.target.closest('.tutorial-close-step') &&
+            !e.target.closest('#close-tutorial')) {
             closeTutorial();
         }
     });
