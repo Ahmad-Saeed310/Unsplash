@@ -1,12 +1,12 @@
-// Unsplash API configuration
+
 const UNSPLASH_API = {
     baseUrl: 'https://api.unsplash.com',
-    // Replace this with your actual Unsplash API access key
+   
     accessKey: 'm4Hw2hi9VD1ZJtrrf-lTxzxMKNkjgZh_pjKg4CDR8B0',
-    perPage: 24 // Changed from 24 to 12 images per page
+    perPage: 24 
 };
 
-// DOM Elements
+
 const elements = {
     searchInput: document.getElementById('search-input'),
     searchButton: document.getElementById('search-button'),
@@ -41,7 +41,7 @@ const elements = {
     dontShowTutorial: document.getElementById('dont-show-tutorial')
 };
 
-// User tags - these can be randomly assigned to users
+// User tags
 const USER_TAGS = [
     'Team Pro Studio',
     'Official',
@@ -55,7 +55,7 @@ const USER_TAGS = [
     'Rising Talent'
 ];
 
-// Generate a tag for a user based on their username and other properties
+
 function getUserTag(user) {
     const hash = user.username.split('').reduce((acc, char) => {
         return ((acc << 5) - acc) + char.charCodeAt(0);
@@ -64,14 +64,14 @@ function getUserTag(user) {
     return USER_TAGS[tagIndex];
 }
 
-// Trending keywords (these can be updated based on your audience/preference)
+// Trending keywords 
 const TRENDING_KEYWORDS = [
     'nature', 'travel', 'landscape', 'food', 'architecture', 
     'minimal', 'technology', 'animals', 'black and white', 'abstract',
     'portrait', 'fashion', 'business', 'wallpaper', 'gradient'
 ];
 
-// Search history from localStorage
+// Search history 
 let searchHistory = JSON.parse(localStorage.getItem('unsplash-search-history') || '[]');
 
 // State variables

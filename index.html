@@ -14,7 +14,6 @@
     <title>Unsplash Gallery</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Core aesthetic variables for consistent design */
         :root {
             --primary-black: #000000;
             --primary-red: rgb(239, 68, 68);
@@ -23,7 +22,6 @@
             --gradient-overlay: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.1) 100%);
         }
 
-        /* Sleek scrollbar styling */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -42,15 +40,12 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
-
-        /* Enhance text readability with smooth rendering */
         body, button, input {
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        
-        /* Base body style improvements */
+
         body {
             overflow-x: hidden;
             transition: var(--transition-smooth);
@@ -84,8 +79,7 @@
             font-size: 18px;
             color: white;
         }
-        
-        /* Favorites toggle button styling */
+
         #favorites-toggle {
             background-color: var(--primary-black);
             transition: var(--transition-smooth);
@@ -130,7 +124,6 @@
             width: 100%;
         }
 
-        /* Image card styling enhancements */
         .image-card {
             break-inside: avoid;
             margin-bottom: 24px;
@@ -147,7 +140,6 @@
             box-shadow: var(--shadow-soft);
         }
 
-        /* Responsive adjustments with more breakpoints */
         @media (min-width: 1536px) {
             .pinterest-grid {
                 column-count: 4;
@@ -184,7 +176,7 @@
                 font-size: 2vh !important;
             }
             
-            /* Responsive navigation */
+
             nav ul {
                 display: none;
             }
@@ -249,7 +241,7 @@
             }
         }
 
-        /* Images with enhanced loading and hover effects */
+
         .image-card img {
             width: 100%;
             height: auto;
@@ -261,7 +253,7 @@
             filter: brightness(1.03);
         }
 
-        /* Enhanced image info overlay */
+ 
         .image-info {
             position: absolute;
             bottom: 0;
@@ -277,7 +269,7 @@
             opacity: 1;
         }
 
-        /* Pointer events fixes */
+
         .pointer-events-none {
             pointer-events: none;
         }
@@ -286,7 +278,7 @@
             pointer-events: auto;
         }
 
-        /* Enhanced profile section styling */
+       
         .profile-section {
             display: flex;
             align-items: center;
@@ -309,7 +301,7 @@
             background-color: white;
         }
         
-        /* Enhanced search interface */
+     
         #search-input {
             height: 46px;
             padding-left: 16px;
@@ -331,7 +323,6 @@
             justify-content: center;
         }
 
-        /* Tutorial styles with enhanced aesthetics */
         .tutorial-step {
             box-shadow: var(--shadow-soft);
             z-index: 60;
@@ -362,7 +353,6 @@
             box-shadow: var(--shadow-soft);
         }
 
-        /* Improved modal styling */
         #photo-modal {
             backdrop-filter: blur(10px);
         }
@@ -440,7 +430,7 @@
             box-shadow: var(--shadow-soft);
         }
         
-        /* Enhanced mobile layout for modal */
+
         @media (max-width: 1024px) {
             .modal-container {
                 max-width: 85vw;
@@ -476,8 +466,7 @@
                 margin-bottom: 10px;
             }
         }
-        
-        /* Mobile menu for small screens */
+  
         .mobile-menu-icon {
             display: none;
             cursor: pointer;
@@ -520,7 +509,7 @@
             list-style: none;
         }
         
-        /* Loading animation enhancement */
+
         @keyframes pulse {
             0%, 100% {
                 opacity: 1;
@@ -534,7 +523,7 @@
             animation: pulse 1.5s infinite;
         }
         
-        /* Create smooth staggered animations */
+    
         .loading-tags div:nth-child(2) {
             animation-delay: 0.2s;
         }
@@ -542,8 +531,7 @@
         .loading-tags div:nth-child(3) {
             animation-delay: 0.4s;
         }
-        
-        /* Enhanced buttons and interactive elements */
+       
         button, 
         .interactive-element {
             transition: var(--transition-smooth);
@@ -555,7 +543,7 @@
             box-shadow: 0 0 0 2px rgba(0,0,0,0.2);
         }
         
-        /* Enhance footer responsiveness */
+ 
         footer {
             transition: var(--transition-smooth);
         }
@@ -569,7 +557,7 @@
             
             <img src="./Black logo.png" class="h-[5vh] w-[7.7vh]" alt="Unsplash Logo">
             
-            <!-- Desktop Navigation -->
+            <!-- Desktop -->
             <ul class="hidden md:flex space-x-[6vh] font-outfit p-4 text-[2vh]">
                 <li><a href="#" class="hover:text-stone-500">Explore</a></li>
                 <li><a href="#" class="hover:text-stone-500">Find Jobs</a></li>
@@ -583,13 +571,13 @@
             </div>
 
             
-            <!-- Mobile Menu Button -->
+            <!-- Mobile Menu -->
             <button id="mobile-menu-button" class="md:hidden flex items-center justify-center w-10 h-10 focus:outline-none">
                 <i class="fas fa-bars text-xl"></i>
             </button>
         </nav>
         
-        <!-- Mobile Menu -->
+        <!-- Mobile -->
         <div id="mobile-menu" class="fixed inset-0 bg-white z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
             <div class="flex justify-end p-4">
                 <button id="mobile-menu-close" class="h-10 w-10 flex items-center justify-center focus:outline-none">
@@ -642,7 +630,7 @@
         </div>
     </header>
 
-    <!-- Simple tutorial popup for first-time users -->
+    <!-- Simple tutorial  -->
     <div id="tutorial-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
         <div class="bg-white rounded-lg max-w-md w-full p-5 shadow-xl">
             <div class="flex justify-between items-center mb-3">
@@ -744,11 +732,11 @@
         </div>
     </main>
 
-    <!-- Tutorial components -->
+    <!-- Tutorial -->
     <div id="tutorial-backdrop" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden"></div>
     
     <div id="tutorial-container" class="fixed inset-0 z-50 pointer-events-none">
-        <!-- Tutorial Step 1: Search Feature -->
+       
         <div id="tutorial-step-1" class="tutorial-step absolute bg-white rounded-lg p-4 shadow-lg w-64 pointer-events-auto hidden">
             <div class="flex items-center mb-2">
                 <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">1</div>
@@ -761,7 +749,7 @@
             </div>
         </div>
         
-        <!-- Tutorial Step 2: Favorites -->
+        
         <div id="tutorial-step-2" class="tutorial-step absolute bg-white rounded-lg p-4 shadow-lg w-64 pointer-events-auto hidden">
             <div class="flex items-center mb-2">
                 <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white">2</div>
@@ -774,7 +762,7 @@
             </div>
         </div>
         
-        <!-- Tutorial Step 3: Gallery & Downloads -->
+        
         <div id="tutorial-step-3" class="tutorial-step absolute bg-white rounded-lg p-4 shadow-lg w-64 pointer-events-auto hidden">
             <div class="flex items-center mb-2">
                 <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white">3</div>
@@ -788,7 +776,7 @@
         </div>
     </div>
     
-    <!-- Don't show again checkbox -->
+   
     <div id="tutorial-dont-show" class="fixed bottom-0 left-0 right-0 p-4 flex justify-center items-center z-50 hidden">
         <label class="flex items-center bg-white px-4 py-2 rounded-full shadow-md">
             <input type="checkbox" id="dont-show-tutorial" class="mr-2">
