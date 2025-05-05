@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .favorite-btn.active i {
-            color: rgb(255, 36, 91) !important;
+            color: rgb(239, 68, 68) !important; /* text-red-500 in Tailwind */
         }
         
         .favorite-btn {
@@ -50,10 +50,21 @@
             transform: scale(1.05);
         }
         
-        /* Pinterest style grid using CSS columns */
+        /* Changing from row-based grid to Pinterest-style masonry layout */
         .pinterest-grid {
             column-count: 3;
-            column-gap: 24px; /* Increased column gap */
+            column-gap: 24px;
+            width: 100%;
+        }
+
+        /* Image card styling for masonry layout */
+        .image-card {
+            break-inside: avoid;
+            margin-bottom: 24px;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: inline-block;
             width: 100%;
         }
 
@@ -69,17 +80,6 @@
                 column-count: 1;
             }
         }
-
-        /* Add margin to image cards for vertical spacing */
-        .image-card {
-            margin-bottom: 24px;
-            break-inside: avoid;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-      
 
         /* Images retain natural aspect ratio */
         .image-card img {
@@ -160,6 +160,92 @@
         .tutorial-next:hover, .tutorial-finish:hover {
             transform: translateY(-1px);
         }
+
+        /* Improved modal styling */
+        #photo-modal {
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-container {
+            max-width: 70vw;
+            max-height: 80vh;
+            width: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-image-container {
+            position: relative;
+            overflow: hidden;
+            max-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+        
+        .modal-image-container img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        
+        .modal-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0) 100%);
+            padding: 30px 20px 16px;
+            color: white;
+            width: 100%;
+        }
+        
+        .modal-user-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+        }
+        
+        .modal-actions button,
+        .modal-actions a {
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+            margin-right: 10px;
+        }
+        
+        .modal-actions button:hover,
+        .modal-actions a:hover {
+            transform: scale(1.1);
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            .modal-container {
+                max-width: 90vw;
+            }
+            
+            .modal-image-container {
+                max-height: 60vh;
+            }
+            
+            .modal-image-container img {
+                max-height: 60vh;
+            }
+        }
     </style>
 </head>
 <body class="bg-white min-h-screen font-['Outfit']">
@@ -172,8 +258,8 @@
                 <li><a href="#" class=" hover:text-stone-500"></a></li>
             </ul>
             <div class="ml-auto font-outfit flex items-center space-x-4 text-[2vh]">
-                <a href="#" class=" hover:text-blue-500">Sign In</a>
-                <a href="#" class="bg-black text-white  px-6 py-4 rounded-full hover:bg-blue-600">Sign Up</a>
+                <a href="#" class=" hover:text-red-500">Sign In</a>
+                <a href="#" class="bg-black text-white  px-6 py-4 rounded-full hover:bg-red-500">Sign Up</a>
         </nav>
         <div id="text" class="flex items-center font-lora font-light text-center justify-center text-[10vh] font-['Crimson'] leading-none mt-[6vh]"><h3>Experience the vision of <br> elite artists.</h3></div>
         <div id="text" class="flex items-center text-center font-lora justify-center text-[3vh] mt-[4vh] font-['Crimson']"><h3>Explore visionary work from top artists ready to bring <br> your next project to life.</h3></div>
@@ -191,7 +277,7 @@
                         </button>
                         <div id="search-suggestions" class="suggestions-container bg-white rounded-lg mt-1 hidden"></div>
                     </div>
-                    <button id="favorites-toggle" class="px-4 py-2 bg-black text-white rounded-full hover:bg-red-500 focus:outline-none">
+                    <button id="favorites-toggle" class="px-4 py-2 active:bg-black hover:text-red-500 text-white rounded-full bg-black focus:outline-none">
                         <i class="fas fa-heart"></i> 
                     </button>
                 </div>
@@ -276,36 +362,35 @@
         </div>
 
         <div id="photo-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden">
-            <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                <div class="flex justify-between items-center p-4 border-b">
-                    <div class="flex items-center">
-                        <img id="modal-user-img" src="" alt="User" class="w-10 h-10 rounded-full mr-3">
-                        <div>
-                            <h3 id="modal-username" class="font-medium"></h3>
-                            <a id="modal-user-link" href="#" target="_blank" class="text-sm text-blue-500">@username</a>
-                        </div>
-                    </div>
-                    <button id="close-modal" class="text-gray-500 hover:text-gray-700">
-                        <i class="fas fa-times text-xl"></i>
+            <div class="modal-container bg-white rounded-lg overflow-hidden">
+                <div class="flex justify-end p-3 absolute top-0 right-0 z-10">
+                    <button id="close-modal" class="text-white hover:text-gray-300 bg-black bg-opacity-50 rounded-full w-8 h-8 flex items-center justify-center">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="p-4">
-                    <img id="modal-image" src="" alt="Photo" class="w-full rounded-md">
-                    <div class="mt-4">
-                        <div class="flex justify-between items-center">
+                <div class="modal-image-container">
+                    <img id="modal-image" src="" alt="Photo" class="w-full">
+                    <div class="modal-info-overlay">
+                        <div class="modal-user-section">
+                            <img id="modal-user-img" src="" alt="User" class="w-10 h-10 rounded-full mr-3">
                             <div>
-                                <button id="modal-favorite" class="mr-4 text-xl">
-                                    <i class="far fa-star"></i>
+                                <h3 id="modal-username" class="font-medium text-white"></h3>
+                                <a id="modal-user-link" href="#" target="_blank" class="text-sm text-gray-300">@username</a>
+                                <span id="modal-date" class="text-xs text-gray-400 block"></span>
+                            </div>
+                        </div>
+                        <p id="modal-description" class="mt-3 text-gray-200 text-sm"></p>
+                        <div class="modal-actions">
+                            <div>
+                                <button id="modal-favorite" class="text-white mr-3">
+                                    <i class="far fa-heart"></i>
                                 </button>
-                                <a id="modal-download" href="#" download class="text-xl">
+                                <a id="modal-download" href="#" download class="text-white">
                                     <i class="fas fa-download"></i>
                                 </a>
                             </div>
-                            <div class="text-sm text-gray-500">
-                                <span id="modal-date"></span>
-                            </div>
+                            <div id="modal-user-tag" class="text-xs text-gray-400"></div>
                         </div>
-                        <p id="modal-description" class="mt-4 text-gray-700"></p>
                     </div>
                 </div>
             </div>
