@@ -3,7 +3,7 @@ const UNSPLASH_API = {
     baseUrl: 'https://api.unsplash.com',
     // Replace this with your actual Unsplash API access key
     accessKey: 'm4Hw2hi9VD1ZJtrrf-lTxzxMKNkjgZh_pjKg4CDR8B0',
-    perPage: 24 // Increased from 12 to 24 images per page
+    perPage: 12 // Changed from 24 to 12 images per page
 };
 
 // DOM Elements
@@ -30,9 +30,15 @@ const elements = {
     trendingKeywords: document.getElementById('trending-keywords'),
     searchSuggestions: document.getElementById('search-suggestions'),
     tutorialOverlay: document.getElementById('tutorial-overlay'),
-    closeTutorial: document.getElementById('close-tutorial'),
-    dontShowTutorial: document.getElementById('dont-show-tutorial'),
-    tutorialStart: document.getElementById('tutorial-start')
+    tutorialBackdrop: document.getElementById('tutorial-backdrop'),
+    tutorialContainer: document.getElementById('tutorial-container'),
+    tutorialSteps: document.querySelectorAll('.tutorial-step'),
+    tutorialSkip: document.querySelectorAll('.tutorial-skip'),
+    tutorialNext: document.querySelectorAll('.tutorial-next'),
+    tutorialBack: document.querySelectorAll('.tutorial-back'),
+    tutorialFinish: document.querySelector('.tutorial-finish'),
+    tutorialDontShow: document.getElementById('tutorial-dont-show'),
+    dontShowTutorial: document.getElementById('dont-show-tutorial')
 };
 
 // User tags - these can be randomly assigned to users
@@ -79,6 +85,7 @@ let state = {
     debounceTimeout: null,
     currentFocusIndex: -1,
     suggestionFocusIndex: -1,
+    currentTutorialStep: 1,
     isFirstVisit: !localStorage.getItem('tutorial-shown')
 };
 
@@ -106,9 +113,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('keydown', handleKeyboardNavigation);
     elements.searchInput.addEventListener('keydown', handleSearchSuggestionNavigation);
-    elements.closeTutorial.addEventListener('click', closeTutorial);
-    elements.tutorialStart.addEventListener('click', closeTutorial);
-    elements.dontShowTutorial.addEventListener('change', (e) => {
+
+    // Tutorial event listeners
+    elements.tutorialSkip.forEach(btn => {
+        btn.addEventListener('click', closeTutorial);
+    });
+    
+    elements.tutorialNext.forEach(btn => {
+        btn.addEventListener('click', nextTutorialStep);
+    });
+    
+    elements.tutorialBack.forEach(btn => {
+        btn.addEventListener('click', previousTutorialStep);
+    });
+    
+    elements.tutorialFinish?.addEventListener('click', closeTutorial);
+    
+    elements.dontShowTutorial?.addEventListener('change', (e) => {
         if (e.target.checked) {
             localStorage.setItem('tutorial-shown', 'true');
         }
@@ -119,19 +140,93 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (state.isFirstVisit) {
         setTimeout(() => {
-            showTutorial();
+            startTutorial();
         }, 1000);
     }
 });
 
-// Show tutorial for first-time users
-function showTutorial() {
+// Start tutorial for first-time users
+function startTutorial() {
     elements.tutorialOverlay.classList.remove('hidden');
+    elements.tutorialBackdrop.classList.remove('hidden');
+    elements.tutorialDontShow.classList.remove('hidden');
+    
+    // Position and show the first step
+    showTutorialStep(1);
+}
+
+// Show a specific tutorial step
+function showTutorialStep(stepNumber) {
+    // Hide all tutorial steps
+    elements.tutorialSteps.forEach(step => step.classList.add('hidden'));
+    
+    // Show the current step
+    const currentStep = document.getElementById(`tutorial-step-${stepNumber}`);
+    if (currentStep) {
+        currentStep.classList.remove('hidden');
+        
+        // Position the tutorial card based on the step
+        positionTutorialCard(stepNumber);
+    }
+    
+    state.currentTutorialStep = stepNumber;
+}
+
+// Position the tutorial card next to the relevant feature
+function positionTutorialCard(stepNumber) {
+    const currentStep = document.getElementById(`tutorial-step-${stepNumber}`);
+    if (!currentStep) return;
+    
+    switch (stepNumber) {
+        case 1:
+            // Position near search bar
+            const searchInput = elements.searchInput;
+            const searchRect = searchInput.getBoundingClientRect();
+            
+            currentStep.style.top = `${searchRect.bottom + 10}px`;
+            currentStep.style.left = `${searchRect.left}px`;
+            break;
+            
+        case 2:
+            // Position near favorites button
+            const favBtn = elements.favoritesToggle;
+            const favRect = favBtn.getBoundingClientRect();
+            
+            currentStep.style.top = `${favRect.bottom + 10}px`;
+            currentStep.style.left = `${favRect.left - currentStep.offsetWidth/2 + favRect.width/2}px`;
+            break;
+            
+        case 3:
+            // Position near gallery
+            const gallery = elements.gallery;
+            const galleryRect = gallery.getBoundingClientRect();
+            
+            currentStep.style.top = `${galleryRect.top + 50}px`;
+            currentStep.style.left = `${galleryRect.left + 50}px`;
+            break;
+    }
+}
+
+// Move to the next tutorial step
+function nextTutorialStep() {
+    if (state.currentTutorialStep < 3) {
+        showTutorialStep(state.currentTutorialStep + 1);
+    }
+}
+
+// Move to the previous tutorial step
+function previousTutorialStep() {
+    if (state.currentTutorialStep > 1) {
+        showTutorialStep(state.currentTutorialStep - 1);
+    }
 }
 
 // Close tutorial
 function closeTutorial() {
     elements.tutorialOverlay.classList.add('hidden');
+    elements.tutorialBackdrop.classList.add('hidden');
+    elements.tutorialDontShow.classList.add('hidden');
+    
     if (elements.dontShowTutorial.checked) {
         localStorage.setItem('tutorial-shown', 'true');
     }
