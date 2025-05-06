@@ -127,37 +127,57 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Tutorial event listeners - use direct click handling instead of forEach to ensure all buttons work
-    document.querySelectorAll('.tutorial-skip').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Stop event bubbling
+    // Tutorial buttons - direct specific selectors for buttons that aren't working
+    
+    // Close button on each tutorial card
+    document.querySelectorAll('.tutorial-close-step').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Close button clicked');
             closeTutorial();
         });
     });
     
+    // Skip tour buttons
+    document.querySelectorAll('.tutorial-skip').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Skip button clicked');
+            closeTutorial();
+        });
+    });
+    
+    // Finish button on the last card
+    const finishButton = document.querySelector('.tutorial-finish');
+    if (finishButton) {
+        finishButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Finish button clicked');
+            closeTutorial();
+        });
+    }
+    
+    // Next buttons
     document.querySelectorAll('.tutorial-next').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Stop event bubbling
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Next button clicked');
             nextTutorialStep();
         });
     });
     
+    // Back buttons
     document.querySelectorAll('.tutorial-back').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Stop event bubbling
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Back button clicked');
             previousTutorialStep();
         });
-    });
-    
-    document.querySelector('.tutorial-finish')?.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop event bubbling
-        closeTutorial();
-    });
-    
-    elements.dontShowTutorial?.addEventListener('change', (e) => {
-        if (e.target.checked) {
-            localStorage.setItem('tutorial-shown', 'true');
-        }
     });
     
     // Add event listeners for the individual tutorial step close buttons with improved handling
