@@ -127,20 +127,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // Tutorial event listeners
-    elements.tutorialSkip.forEach(btn => {
-        btn.addEventListener('click', closeTutorial);
+    // Tutorial event listeners - use direct click handling instead of forEach to ensure all buttons work
+    document.querySelectorAll('.tutorial-skip').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Stop event bubbling
+            closeTutorial();
+        });
     });
     
-    elements.tutorialNext.forEach(btn => {
-        btn.addEventListener('click', nextTutorialStep);
+    document.querySelectorAll('.tutorial-next').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Stop event bubbling
+            nextTutorialStep();
+        });
     });
     
-    elements.tutorialBack.forEach(btn => {
-        btn.addEventListener('click', previousTutorialStep);
+    document.querySelectorAll('.tutorial-back').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Stop event bubbling
+            previousTutorialStep();
+        });
     });
     
-    elements.tutorialFinish?.addEventListener('click', closeTutorial);
+    document.querySelector('.tutorial-finish')?.addEventListener('click', (e) => {
+        e.stopPropagation(); // Stop event bubbling
+        closeTutorial();
+    });
     
     elements.dontShowTutorial?.addEventListener('change', (e) => {
         if (e.target.checked) {
@@ -148,9 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Add event listeners for the individual tutorial step close buttons
+    // Add event listeners for the individual tutorial step close buttons with improved handling
     document.querySelectorAll('.tutorial-close-step').forEach(btn => {
-        btn.addEventListener('click', closeTutorial);
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent event bubbling
+            closeTutorial();
+        });
     });
     
     // Make the tutorial backdrop clickable to close tutorial

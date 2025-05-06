@@ -263,12 +263,21 @@
             padding: 25px 16px 16px;
             opacity: 0;
             transition: var(--transition-smooth);
+            max-height: 60%; /* Limit height in all views */
+            overflow-y: auto; /* Allow scrolling if content is too large */
         }
 
         .image-card:hover .image-info {
             opacity: 1;
         }
-
+        
+        /* Responsive adjustments for image info */
+        @media (max-width: 640px) {
+            .image-info {
+                max-height: 50%; /* Even smaller on mobile screens */
+                padding: 16px 12px 12px;
+            }
+        }
 
         .pointer-events-none {
             pointer-events: none;
@@ -374,10 +383,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer; 
+            position: relative;
+            z-index: 70; /* Higher z-index to ensure clickability */
         }
         
         .tutorial-close-step:hover {
-            background-color: rgba(0,0,0,0.05);
+            background-color: rgba(0,0,0,0.1);
+        }
+        
+        .tutorial-close-step i {
+            font-size: 14px;
+            color: #666;
         }
 
         #photo-modal {
