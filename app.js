@@ -826,6 +826,7 @@ function toggleFavoritePhoto(photoId) {
         }
     }
 
+    // Update all instances of this heart button
     const favBtns = document.querySelectorAll(`.favorite-btn[data-id="${photoId}"]`);
     favBtns.forEach(btn => {
         btn.classList.toggle('active');
@@ -833,10 +834,11 @@ function toggleFavoritePhoto(photoId) {
         btn.setAttribute('aria-pressed', !isInFavorites);
     });
 
+    // Update modal heart button if it's currently showing this photo
     if (elements.modalImage.dataset.id === photoId) {
+        elements.modalFavorite.classList.toggle('active');
         elements.modalFavorite.querySelector('i').classList.toggle('far');
         elements.modalFavorite.querySelector('i').classList.toggle('fas');
-        elements.modalFavorite.classList.toggle('text-yellow-400');
     }
 
     localStorage.setItem('unsplash-favorites', JSON.stringify(state.favorites));
@@ -917,7 +919,7 @@ function openPhotoModal(photo) {
 
     const isInFavorites = state.favorites.some(fav => fav.id === photo.id);
     elements.modalFavorite.querySelector('i').className = isInFavorites ? 'fas fa-heart' : 'far fa-heart';
-    elements.modalFavorite.classList.toggle('text-red-500', isInFavorites);
+    elements.modalFavorite.classList.toggle('active', isInFavorites);
 
     elements.photoModal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
